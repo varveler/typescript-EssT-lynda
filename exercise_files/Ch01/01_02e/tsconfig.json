@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "build",
         "target": "esnext",
-        "noEmit": true
+        //"noEmit": true // not to transpile to JS just for type checking
     },
     "include": ["src/**/*"]
 }
