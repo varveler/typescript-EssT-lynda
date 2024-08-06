@@ -411,4 +411,143 @@ class KeyValuePair<Tkey, TValue> {
 }
 ```
 
+## Combining multiple types
+
+White the use of type aliases to create dynamic and more powerfull types, with the keyword "type".
+
+```Typescript
+type MyTypeAlias = string;
+```
+
+Using the pipe operator when defining an alias:
+
+```Typescript
+type SomeDate = Date | string | number;
+
+// Then you can use it in an interface
+
+interface Contact {
+    name: string;
+    id: number;
+    birthdate: SomeDate;
+}
+```
+
+Also is possible is to combine multiple types together to create a new type.
+
+```Typescript
+// Here we include all fields from address on contact
+interface Contact extends Address{
+    name: string;
+    id: number;
+}
+
+interface Address {
+    street: string;
+    state: string;
+}
+```
+And if we wanted to have two types of contacts, one with address and one without:
+
+```Typescript
+interface Contact{
+    name: string;
+    id: number;
+}
+
+interface Address {
+    street: string;
+    state: string;
+}
+
+interface AddressableContact extends Contact, Address {}
+
+//also we can use this other syntaxt to accomplish the same:
+
+type AddressableContact2 extends Contact & Address;
+
+```
+
+Also is possible to use a type alias instead of a enum:
+
+```Typescript
+enum Status {
+    Active = "active"
+    Inactive = "inactive"
+    New = "new"
+}
+
+type StatusAsAlias = "active" | "inactive" | "new"
+
+interface Contact{
+    name: string;
+    id: number;
+    status: StatusAsAlias;
+}
+```
+## keyof operator
+powerfull syntaxt to restrict values dynamicall and avoid hard to debug errors
+
+To understand take a look at the code below
+
+
+```Typescript
+type ContactName = string;
+type ContactStatus = "active" | "inactive" | "new"
+type ContactBirthDate = Date | number | string
+
+interface Contact {
+    id: number;
+    name: ContactName;
+    birthDate?: ContactBirthDate;
+    status?: ContactStatus;
+}
+
+let primaryContact: Contact = {
+    id: 12345,
+    name: "Jamie Johnson",
+    status: "active"
+}
+
+type ContactFields = keyof Contact
+const field : ContactFields = "status"
+
+
+function getValue(source, propertyName){
+    return source[propertyName]
+}
+//this will work fine
+const someProperty = getValue(primaryContact, 'id')
+
+//this will not work returning undefined
+const someProperty =  getValue(primaryContact, 'lastname')
+```
+To avoid we can use keyof to limit the values to valid properties of the contact type/interface
+
+
+```Typescript
+function getValue(source, propertyName: keyof Contact){
+    return source[propertyName]
+}
+```
+
+We also can refactor to a generic function to be reusable with other types
+
+```Typescript
+
+function getValue <T, U extends keyof T>(source:T, propertyName: U){
+    return source[propertyName]
+}
+
+const value = getValue({min:1,max:34},"max")
+
+```
+
+
+
+
+
+
+
+
 
